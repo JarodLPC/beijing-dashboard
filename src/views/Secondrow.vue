@@ -328,7 +328,7 @@ onMounted(async () => {
         fetchOee();
         optionOee.series[0].data = oeeData;
         optionOee = { ...optionOee };
-    }, 3400000);
+    }, 2000000);
 
 
 
