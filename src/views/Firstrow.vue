@@ -161,7 +161,7 @@ let fetchFailuresTimeCount = async () => {
 
 }
 
-let respLabors: number[] = [];
+let respLabors: number[];
 let respUtilizations: number[] = [];
 
 let loadingLabor = ref<boolean>(true);
