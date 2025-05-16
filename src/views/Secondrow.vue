@@ -25,18 +25,25 @@ let fetchOee = async () => {
 
 
     try {
-        const oeeResults = await request.get<any, ResponseResult<LineEquipmentFormulaResultDtoMiddle>>(url);
+        // const oeeResults = await request.get<any, ResponseResult<LineEquipmentFormulaResultDtoMiddle>>(url);
 
-        // console.log('oeeResults', oeeResults);
-        oeeResults.result.forEach((el: LineEquipmentFormulaResultDtoMiddle) => {
+        // // console.log('oeeResults', oeeResults);
+        // oeeResults.result.forEach((el: LineEquipmentFormulaResultDtoMiddle) => {
 
-            oeeData.push(Number(el.result[0].value.displayValue.toFixed(2)));
+        //     oeeData.push(Number(el.result[0].value.displayValue.toFixed(2)));
 
-        });
+        // });
         // console.log('oeedata', oeeData);
         //获取数据之后让数据显示在图表上，隐藏loading界面
-        optionOee.series[0].data = oeeData;
+        // optionOee.series[0].data = oeeData;
+        const mockOeeResults: ResponseResult<LineEquipmentFormulaResultDtoMiddle> = {
+            success: true,
+            result: [82.4, 80.3, 79, 78.3, 77.3, 70.7, 32.8, 31.6, 29.7, 0, 0, 0]
+        };
 
+        mockOeeResults.result.forEach((el: LineEquipmentFormulaResultDtoMiddle) => {
+            oeeData.push(Math.random() * 100);
+        });
         loadingOee.value = false;
 
 
@@ -307,28 +314,29 @@ let optionOee = reactive({
 
 onMounted(async () => {
     fetchOee();
-    fetchMachineStopSummary();
-    summaryIntervalId = setInterval(() => {
-        loadingMachineStopSummary.value = true;
-        sortedCategories = [];
-        sortedValues = [];
-        percentageValues = [];
+    // fetchMachineStopSummary();
+    // summaryIntervalId = setInterval(() => {
+    //     loadingMachineStopSummary.value = true;
+    //     sortedCategories = [];
+    //     sortedValues = [];
+    //     percentageValues = [];
 
-        fetchMachineStopSummary();
+    //     fetchMachineStopSummary();
 
-        optionMachineStopSummary.xAxis.data = sortedCategories;
-        optionMachineStopSummary.series[0].data = sortedValues;
-        optionMachineStopSummary.series[1].data = percentageValues;
-        optionMachineStopSummary = { ...optionMachineStopSummary };
-    }, 3400000);
+    //     optionMachineStopSummary.xAxis.data = sortedCategories;
+    //     optionMachineStopSummary.series[0].data = sortedValues;
+    //     optionMachineStopSummary.series[1].data = percentageValues;
+    //     optionMachineStopSummary = { ...optionMachineStopSummary };
+    // }, 3400000);
 
     oeeIntervalId = setInterval(() => {
-        loadingOee.value = true;
+        loadingOee.value = false;
         oeeData = [];
         fetchOee();
+        oeeData[0] = Math.floor(Math.random() * 100);
         optionOee.series[0].data = oeeData;
-        optionOee = { ...optionOee };
-    }, 2000000);
+        // optionOee = { ...optionOee };
+    }, 5000);
 
 
 

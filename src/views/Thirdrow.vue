@@ -25,11 +25,12 @@ let fetchMttrData = async () => {
     try {
 
         const mttrResults = await request.get<any, ResponseResult<LineEquipmentFormulaResultDtoMiddle>>(url);
+        respMttrs = [];
         mttrResults.result.forEach((item: LineEquipmentFormulaResultDtoMiddle) => {
             respMttrs.push(Number((item.result[0].value.displayValue / 60).toFixed(2)));
         });
 
-        optionLineMttr.series[0].data = respMttrs;
+        optionLineMttr.value.series[0].data = respMttrs;
         loadingMttr.value = false;
         // console.log('respMttrs', respMttrs);
 
@@ -50,11 +51,12 @@ let fetchMtbfData = async () => {
     try {
 
         const mtbfResults = await request.get<any, ResponseResult<LineEquipmentFormulaResultDtoMiddle>>(url);
-        mtbfResults.result.forEach((item: LineEquipmentFormulaResultDtoMiddle) => {
+        respMtbfs = [];
+            mtbfResults.result.forEach((item: LineEquipmentFormulaResultDtoMiddle) => {
             respMtbfs.push(Number((item.result[0].value.displayValue / 60).toFixed(2)));
         });
 
-        optionLineMtbf.series[0].data = respMtbfs;
+        optionLineMtbf.value.series[0].data = respMtbfs;
         loadingMtbf.value = false;
         // console.log('respMtbfs', respMtbfs);
     } catch (error) {
@@ -72,10 +74,10 @@ onMounted(async () => {
 
         fetchMttrData();
 
-        optionLineMttr.series[0].data = respMttrs;
+        optionLineMttr.value.series[0].data = respMttrs;
 
-        optionLineMttr = { ...optionLineMttr };
-    }, 3500000);
+        optionLineMttr.value = { ...optionLineMttr.value };
+    }, 350*1000);
     mtbfIntervalId = setInterval(() => {
 
         loadingMtbf.value = true;
@@ -83,11 +85,11 @@ onMounted(async () => {
 
         fetchMtbfData();
 
-        optionLineMtbf.series[0].data = respMtbfs;
+        optionLineMtbf.value.series[0].data = respMtbfs;
 
-        optionLineMtbf = { ...optionLineMtbf };
+        optionLineMtbf.value = { ...optionLineMtbf.value };
 
-    }, 3600000);
+    }, 360*1000);
 
 })
 onBeforeUnmount(() => {
@@ -95,7 +97,7 @@ onBeforeUnmount(() => {
     clearInterval(mtbfIntervalId);
 })
 
-let optionLineMttr = reactive({
+let optionLineMttr = ref({
     title: {
         text: 'MTTR',
         style: {
@@ -141,7 +143,7 @@ let optionLineMttr = reactive({
         }
     ]
 })
-let optionLineMtbf = reactive({
+let optionLineMtbf = ref({
     title: {
         text: 'MTBF',
         style: {

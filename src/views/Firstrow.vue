@@ -1,8 +1,9 @@
 <script setup lang="ts">
-import { onBeforeUnmount, onMounted, reactive, ref } from 'vue';
+import { onBeforeUnmount, onMounted, reactive, ref, nextTick } from 'vue';
 import request from "@/utils/requests";
 import { getCurrentDate, lastMonthFrom, lastMonthTo, ytdFrom, ytdTo } from '@/utils/timeSolving';
 import type { ResponseResult, LineEquipmentFormulaResultDtoMiddle, LineEquipmentFormulaResultDto } from '@/types'
+import Echarts from '@/components/Echarts.vue';
 
 let occYtdData: number = 0;
 let occLastMonthData: number = 0;
@@ -59,9 +60,18 @@ let optionLabor = reactive({
         {
             data: [86.8, 80.3, 80.3, 80.4, 77.1, 81.7, 57.5, 68.0, 68.3, 0, 0, 0],
             type: 'line',
-            lineArea: {
-                show: true,
-                gradient: ['rgba(251, 114, 147, 0.6)', 'rgba(251, 114, 147, 0)']
+            areaStyle: {
+                color: {
+                    type: 'linear',
+                    x: 0,
+                    y: 0,
+                    x2: 0,
+                    y2: 1,
+                    colorStops: [
+                        { offset: 0, color: 'rgba(251, 114, 147, 0.6)' },
+                        { offset: 1, color: 'rgba(251, 114, 147, 0)' }
+                    ]
+                }
             }
         }
     ]
@@ -107,10 +117,20 @@ let optionUtilization = reactive({
         {
             data: [52.3, 25.1, 47.4, 45.3, 37.6, 41.1, 32, 36.4, 34.1, 0, 0, 0],
             type: 'line',
-            lineArea: {
-                show: true,
-                gradient: ['rgba(251, 114, 147, 0.6)', 'rgba(251, 114, 147, 0)']
-            }
+            areaStyle: {
+                color: {
+                    type: 'linear',
+                    x: 0,
+                    y: 0,
+                    x2: 0,
+                    y2: 1,
+                    colorStops: [
+                        { offset: 0, color: 'rgba(251, 114, 147, 0.6)' },
+                        { offset: 1, color: 'rgba(251, 114, 147, 0)' }
+                    ]
+                }
+            },
+            smooth: true // Optional: makes line smoother
         }
     ]
 })
@@ -164,7 +184,7 @@ let fetchFailuresTimeCount = async () => {
 let respLabors: number[] = [];
 let respUtilizations: number[] = [];
 
-let loadingLabor = ref<boolean>(true);
+let loadingLabor = ref<boolean>(false);
 let loadingUtilization = ref<boolean>(true);
 //设置刷新时间ID
 let laborIntervalId: any | null = null;
@@ -180,12 +200,12 @@ let fetchLaborData = async () => {
     //发送请求获取MTTR数据
     try {
 
-        const laborResults = await request.get<any, ResponseResult<LineEquipmentFormulaResultDtoMiddle>>(url);
-        laborResults.result.forEach((item: LineEquipmentFormulaResultDtoMiddle) => {
-            respLabors.push(Number(item.result[0].value.displayValue));
-        });
+        // const laborResults = await request.get<any, ResponseResult<LineEquipmentFormulaResultDtoMiddle>>(url);
+        // laborResults.result.forEach((item: LineEquipmentFormulaResultDtoMiddle) => {
+        //     respLabors.push(Number(item.result[0].value.displayValue));
+        // });
 
-        optionLabor.series[0].data = respLabors;
+        optionLabor.series[0].data[1] = Math.random()*50;
         loadingLabor.value = false;
         // console.log('respLabors', respLabors)
 
@@ -221,39 +241,40 @@ let fetchUtilizationData = async () => {
 }
 
 onMounted(async () => {
+    await nextTick() // Ensure DOM is rendered
     fetchLaborData();
-    fetchUtilizationData();
-    fetchFailuresTimeCount();
+    // fetchUtilizationData();
+    // fetchFailuresTimeCount();
     laborIntervalId = setInterval(() => {
 
         loadingLabor.value = true;
 
-        respLabors = [];
+        respLabors = [86.8, 80.3, 80.3, 80.4, 77.1, 81.7, 57.5, 68.0, 68.3, 0, 0, 0];
 
         fetchLaborData();
 
-        optionLabor.series[0].data = respLabors;
+        // optionLabor.series[0].data = respLabors;
 
         optionLabor = { ...optionLabor };
-    }, 40 * 60 * 1000);
-    utilizationIntervalId = setInterval(() => {
+    }, 1 * 6 * 1000);
+    // utilizationIntervalId = setInterval(() => {
 
-        loadingUtilization.value = true;
-        respUtilizations = [];
+    //     loadingUtilization.value = true;
+    //     respUtilizations = [];
 
-        fetchUtilizationData();
+    //     fetchUtilizationData();
 
-        optionUtilization.series[0].data = respUtilizations;
+    //     optionUtilization.series[0].data = respUtilizations;
 
-        optionUtilization = { ...optionUtilization };
+    //     optionUtilization = { ...optionUtilization };
 
-    }, 50 * 60 * 1000);
-    occIntervalId = setInterval(() => {
-        loadingOcc.value = true;
-        loadingDur.value = true;
-        fetchFailuresTimeCount();
+    // }, 50 * 60 * 1000);
+    // occIntervalId = setInterval(() => {
+    //     loadingOcc.value = true;
+    //     loadingDur.value = true;
+    //     fetchFailuresTimeCount();
 
-    }, 30 * 60 * 1000);
+    // }, 30 * 60 * 1000);
 })
 onBeforeUnmount(() => {
     clearInterval(occIntervalId);
@@ -265,9 +286,10 @@ onBeforeUnmount(() => {
 <template>
     <div style="flex: 0 1 30%">
         <dv-border-box12 style="width: 100%; height: 300px;">
-            <dv-loading v-if="loadingLabor">Loading...</dv-loading>
-            <div dv-bg v-else>
-                <dv-charts :option="optionLabor" style="width:100%;height:300px;" />
+            <!-- <dv-loading v-if="loadingLabor">Loading...</dv-loading> -->
+            <div v-if="loadingLabor">Loading...</div>
+            <div dv-bg v-else style="width: 100%; height: 100%;">
+                <Echarts :option="optionLabor" style="width:500px;height:300px;" />
             </div>
         </dv-border-box12>
     </div>
@@ -279,7 +301,8 @@ onBeforeUnmount(() => {
                     Occurence TPM Failures
                 </div>
                 <!-- <div style="font-size: 60px;text-align: center;">{{ temp }}</div> -->
-                <dv-loading v-if="loadingOcc">Loading...</dv-loading>
+                <!-- <dv-loading v-if="loadingOcc">Loading...</dv-loading> -->
+                <div v-if="loadingLabor">Loading...</div>
                 <div v-else style="font-size: 60px;flex:0 1 50%; text-align: center;display: flex;">
                     <div style="flex: 0 1 50%; height:100px ">
                         <div style="font-size: 20px; padding: 10px;">Last Month</div>
@@ -305,7 +328,8 @@ onBeforeUnmount(() => {
                 <div style="font-size: 30px; font-weight: bold;  text-align: center;">
                     Duration TPM Failures
                 </div>
-                <dv-loading v-if="loadingDur">Loading...</dv-loading>
+                <!-- <dv-loading v-if="loadingDur">Loading...</dv-loading> -->
+                <div v-if="loadingLabor">Loading...</div>
                 <div v-else style="font-size: 60px;flex:0 1 50%; text-align: center;display: flex;">
                     <div style="flex: 0 1 50%; height:100px ">
                         <div style="font-size: 20px; padding: 10px;">Last Month (h)</div>
@@ -324,9 +348,10 @@ onBeforeUnmount(() => {
     <div style="flex: 0 1 30%">
 
         <dv-border-box12 style="width: 100%; height: 300px;">
-            <dv-loading v-if="loadingUtilization">Loading...</dv-loading>
+            <!-- <dv-loading v-if="loadingUtilization">Loading...</dv-loading> -->
+            <div v-if="loadingLabor">Loading...</div>
             <div dv-bg v-else>
-                <dv-charts :option="optionUtilization" style="width:100%;height:300px;" />
+                <Echarts :option="optionUtilization" style="width:100%;height:300px;" />
             </div>
         </dv-border-box12>
     </div>
