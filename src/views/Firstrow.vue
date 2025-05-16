@@ -3,7 +3,9 @@ import { onBeforeUnmount, onMounted, reactive, ref } from 'vue';
 import request from "@/utils/requests";
 import { getCurrentDate, lastMonthFrom, lastMonthTo, ytdFrom, ytdTo } from '@/utils/timeSolving';
 import type { ResponseResult, LineEquipmentFormulaResultDtoMiddle, LineEquipmentFormulaResultDto } from '@/types'
+import Echarts from '@/components/Echarts.vue';
 
+let Mock = false;
 let occYtdData: number = 0;
 let occLastMonthData: number = 0;
 let durYtdData: number = 0;
@@ -19,86 +21,105 @@ let loadingOcc = ref<boolean>(true);
 let loadingDur = ref<boolean>(true);
 
 let optionLabor = reactive({
+    grid: {
+        top: 60,     // 增加这个值会让图表整体向下移动
+        bottom: 30,
+        left: 50,
+        right: 20
+    },
     title: {
         text: 'Labor Efficiency',
-        style: {
-            fill: '#fff',
+        left: 'center', // 水平居中
+        top:8,
+        textStyle: {
+            color: '#d3d3d3', // ✅ 使用 color 替代 fill
             fontSize: 30
         }
     },
-
     xAxis: {
         name: getCurrentDate()[0].toString(),
         nameTextStyle: {
-            fill: '#fff'
+            color: '#d3d3d3' // ✅ 改为 color
         },
         data: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
             'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
         axisLabel: {
-            style: {
-                fill: '#fff'
+            textStyle: {
+                color: '#d3d3d3' // ✅ 改为 textStyle + color
             }
         }
     },
     yAxis: {
         name: '%',
         nameTextStyle: {
-            fill: '#fff'
+            color: '#d3d3d3'
         },
-        data: 'value',
         min: 0,
         max: 100,
         axisLabel: {
-            style: {
-                fill: '#fff'
+            textStyle: {
+                color: '#d3d3d3'
             },
-            formatter: '{value} %',
+            formatter: '{value} %'
         }
     },
-    series: [
-        {
-            data: [86.8, 80.3, 80.3, 80.4, 77.1, 81.7, 57.5, 68.0, 68.3, 0, 0, 0],
-            type: 'line',
-            lineArea: {
-                show: true,
-                gradient: ['rgba(251, 114, 147, 0.6)', 'rgba(251, 114, 147, 0)']
+    series: [{
+        type: 'line',
+        data: [86.8, 80.3, 80.3, 80.4, 77.1, 81.7, 57.5, 68.0, 68.3, 0, 0, 0],
+        areaStyle: {
+            color: {
+                type: 'linear',
+                x: 0,
+                y: 0,
+                x2: 0,
+                y2: 1,
+                colorStops: [
+                    { offset: 0, color: 'rgba(251, 114, 147, 0.6)' },
+                    { offset: 1, color: 'rgba(251, 114, 147, 0)' }
+                ]
             }
         }
-    ]
-})
+    }]
+});
 let optionUtilization = reactive({
+    grid: {
+        top: 60,     // 增加这个值会让图表整体向下移动
+        bottom: 30,
+        left: 50,
+        right: 20
+    },
     title: {
         text: 'Utilization',
-        style: {
-            fill: '#fff',
+        left: 'center', // ✅ 补充居中设置
+        top:8,
+        textStyle: {
+            color: '#d3d3d3', // ✅ 使用 color
             fontSize: 30
         }
     },
-
     xAxis: {
         name: getCurrentDate()[0].toString(),
         nameTextStyle: {
-            fill: '#fff'
+            color: '#d3d3d3'
         },
         data: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
             'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
         axisLabel: {
-            style: {
-                fill: '#fff'
+            textStyle: {
+                color: '#d3d3d3'
             }
         }
     },
     yAxis: {
         name: '%',
         nameTextStyle: {
-            fill: '#fff'
+            color: '#d3d3d3'
         },
-        data: 'value',
         min: 0,
         max: 100,
         axisLabel: {
-            style: {
-                fill: '#fff'
+            textStyle: {
+                color: '#d3d3d3'
             },
             formatter: '{value} %'
         }
@@ -107,13 +128,23 @@ let optionUtilization = reactive({
         {
             data: [52.3, 25.1, 47.4, 45.3, 37.6, 41.1, 32, 36.4, 34.1, 0, 0, 0],
             type: 'line',
-            lineArea: {
-                show: true,
-                gradient: ['rgba(251, 114, 147, 0.6)', 'rgba(251, 114, 147, 0)']
-            }
+            areaStyle: {
+                color: {
+                    type: 'linear',
+                    x: 0,
+                    y: 0,
+                    x2: 0,
+                    y2: 1,
+                    colorStops: [
+                        { offset: 0, color: 'rgba(251, 114, 147, 0.6)' },
+                        { offset: 1, color: 'rgba(251, 114, 147, 0)' }
+                    ]
+                }
+            },
+            // smooth: true // Optional: makes line smoother
         }
     ]
-})
+});
 let fetchFailuresTimeCount = async () => {
     let requestArr = [];
     // console.log(queryYtdTo, '??????????????')
@@ -179,13 +210,21 @@ let fetchLaborData = async () => {
 
     //发送请求获取MTTR数据
     try {
+        if(!Mock) {
+            const laborResults = await request.get<any, ResponseResult<LineEquipmentFormulaResultDtoMiddle>>(url);
+            laborResults.result.forEach((item: LineEquipmentFormulaResultDtoMiddle) => {
+                respLabors.push(Number(item.result[0].value.displayValue));
+            });
 
-        const laborResults = await request.get<any, ResponseResult<LineEquipmentFormulaResultDtoMiddle>>(url);
-        laborResults.result.forEach((item: LineEquipmentFormulaResultDtoMiddle) => {
-            respLabors.push(Number(item.result[0].value.displayValue));
-        });
+            optionLabor.series[0].data = respLabors;
+        }else{
+            for(let i = 0; i < 12; i++){
+                respLabors.push(Math.random() * 100);
+            }
 
-        optionLabor.series[0].data = respLabors;
+        }
+
+
         loadingLabor.value = false;
         // console.log('respLabors', respLabors)
 
@@ -205,13 +244,19 @@ let fetchUtilizationData = async () => {
 
     //发送请求获取MTTR数据
     try {
+        if(!Mock){
+            const UtilizationResults = await request.get<any, ResponseResult<LineEquipmentFormulaResultDtoMiddle>>(url);
+            UtilizationResults.result.forEach((item: LineEquipmentFormulaResultDtoMiddle) => {
+                respUtilizations.push(Number(item.result[0].value.displayValue));
+            });
 
-        const UtilizationResults = await request.get<any, ResponseResult<LineEquipmentFormulaResultDtoMiddle>>(url);
-        UtilizationResults.result.forEach((item: LineEquipmentFormulaResultDtoMiddle) => {
-            respUtilizations.push(Number(item.result[0].value.displayValue));
-        });
-
-        optionUtilization.series[0].data = respUtilizations;
+            optionUtilization.series[0].data = respUtilizations;
+        }else{
+            for(let i = 0; i < 12; i++){
+                respUtilizations.push(Math.random() * 100);
+            }
+        }
+        
         loadingUtilization.value = false;
         // console.log('respUtilizations', respUtilizations);
     } catch (error) {
@@ -266,8 +311,8 @@ onBeforeUnmount(() => {
     <div style="flex: 0 1 30%">
         <dv-border-box12 style="width: 100%; height: 300px;">
             <dv-loading v-if="loadingLabor">Loading...</dv-loading>
-            <div dv-bg v-else>
-                <dv-charts :option="optionLabor" style="width:100%;height:300px;" />
+            <div dv-bg v-else style="width: 100%;height: 100%;">
+                <Echarts :option="optionLabor" style="width:100%;height:300px;" />
             </div>
         </dv-border-box12>
     </div>
@@ -325,8 +370,8 @@ onBeforeUnmount(() => {
 
         <dv-border-box12 style="width: 100%; height: 300px;">
             <dv-loading v-if="loadingUtilization">Loading...</dv-loading>
-            <div dv-bg v-else>
-                <dv-charts :option="optionUtilization" style="width:100%;height:300px;" />
+            <div dv-bg v-else style="width: 100%;height: 100%;">
+                <Echarts :option="optionUtilization" style="width:100%;height:300px;" />
             </div>
         </dv-border-box12>
     </div>

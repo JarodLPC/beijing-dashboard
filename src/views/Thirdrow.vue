@@ -3,6 +3,9 @@ import { reactive, onMounted, onBeforeUnmount, ref } from 'vue'
 import request from "@/utils/requests";
 import { getCurrentDate } from '@/utils/timeSolving';
 import type { ResponseResult, LineEquipmentFormulaResultDtoMiddle } from '@/types'
+import Echarts from '@/components/Echarts.vue';
+
+let Mock = false;
 let respMttrs: number[] = [];
 let respMtbfs: number[] = [];
 
@@ -24,12 +27,19 @@ let fetchMttrData = async () => {
     //发送请求获取MTTR数据
     try {
 
-        const mttrResults = await request.get<any, ResponseResult<LineEquipmentFormulaResultDtoMiddle>>(url);
-        mttrResults.result.forEach((item: LineEquipmentFormulaResultDtoMiddle) => {
-            respMttrs.push(Number((item.result[0].value.displayValue / 60).toFixed(2)));
-        });
+        if(!Mock){
+            const mttrResults = await request.get<any, ResponseResult<LineEquipmentFormulaResultDtoMiddle>>(url);
+            mttrResults.result.forEach((item: LineEquipmentFormulaResultDtoMiddle) => {
+                respMttrs.push(Number((item.result[0].value.displayValue / 60).toFixed(2)));
+            });
 
-        optionLineMttr.series[0].data = respMttrs;
+            optionLineMttr.series[0].data = respMttrs;
+        }else{
+            for(let i = 0; i < 12; i++ ){
+                respMttrs.push(Number((Math.random() * 100).toFixed(2)));
+            }
+            optionLineMttr.series[0].data = respMttrs;
+        }
         loadingMttr.value = false;
         // console.log('respMttrs', respMttrs);
 
@@ -48,13 +58,22 @@ let fetchMtbfData = async () => {
 
     //发送请求获取MTTR数据
     try {
+        if(!Mock){
+            const mtbfResults = await request.get<any, ResponseResult<LineEquipmentFormulaResultDtoMiddle>>(url);
+            mtbfResults.result.forEach((item: LineEquipmentFormulaResultDtoMiddle) => {
+                respMtbfs.push(Number((item.result[0].value.displayValue / 60).toFixed(2)));
+            });
 
-        const mtbfResults = await request.get<any, ResponseResult<LineEquipmentFormulaResultDtoMiddle>>(url);
-        mtbfResults.result.forEach((item: LineEquipmentFormulaResultDtoMiddle) => {
-            respMtbfs.push(Number((item.result[0].value.displayValue / 60).toFixed(2)));
-        });
+            optionLineMtbf.series[0].data = respMtbfs;
 
-        optionLineMtbf.series[0].data = respMtbfs;
+        }else{
+            for(let i = 0; i < 12; i++){
+                respMtbfs.push(Number((Math.random() * 100).toFixed(2)));
+            }
+            
+            optionLineMtbf.series[0].data = respMtbfs;  
+        }
+        
         loadingMtbf.value = false;
         // console.log('respMtbfs', respMtbfs);
     } catch (error) {
@@ -94,108 +113,147 @@ onBeforeUnmount(() => {
     clearInterval(mttrIntervalId);
     clearInterval(mtbfIntervalId);
 })
+const baseGrid = {
+    top: 60,
+    bottom: 30,
+    left: 60,
+    right: 60
+}
 
+const baseTitle = {
+    left: 'center',
+    top: 10,
+    textStyle: {
+        color: '#d3d3d3',
+        fontSize: 30
+    }
+}
 let optionLineMttr = reactive({
     title: {
         text: 'MTTR',
-        style: {
-            fill: '#fff',
+        left: 'center',
+        top: 10,
+        textStyle: {
+            color: '#d3d3d3',
             fontSize: 30
         }
     },
-
+    grid:{
+        top: 60,
+        bottom: 60,
+        left: 60,
+        right: 60
+    },
+    tooltip: {},
     xAxis: {
         name: getCurrentDate()[0].toString(),
         nameTextStyle: {
-            fill: '#fff'
+            color: '#d3d3d3'
         },
         data: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
             'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
         axisLabel: {
-            style: {
-                fill: '#fff'
-            }
+            color: '#d3d3d3'
         }
     },
     yAxis: {
         name: 'Minute',
         nameTextStyle: {
-            fill: '#fff'
+            color: '#d3d3d3'
         },
-        data: 'value',
+        type: 'value',
         min: 0,
         axisLabel: {
-            style: {
-                fill: '#fff'
-            }
+            color: '#d3d3d3'
         }
     },
     series: [
         {
             data: respMttrs,
             type: 'line',
-            lineArea: {
-                show: true,
-                gradient: ['rgba(251, 114, 147, 0.6)', 'rgba(251, 114, 147, 0)']
+            areaStyle: {
+                color: {
+                    type: 'linear',
+                    x: 0,
+                    y: 0,
+                    x2: 0,
+                    y2: 1,
+                    colorStops: [
+                        { offset: 0, color: 'rgba(251, 114, 147, 0.6)' },
+                        { offset: 1, color: 'rgba(251, 114, 147, 0)' }
+                    ]
+                }
             }
         }
     ]
-})
+});
 let optionLineMtbf = reactive({
     title: {
         text: 'MTBF',
-        style: {
-            fill: '#fff',
+        left: 'center',
+        top: 10,
+        textStyle: {
+            color: '#d3d3d3',
             fontSize: 30
         }
     },
-
+    grid: {
+        top: 60,
+        bottom: 60,
+        left: 60,
+        right: 60
+    },
+    tooltip: {},
     xAxis: {
         name: getCurrentDate()[0].toString(),
         nameTextStyle: {
-            fill: '#fff'
-
+            color: '#d3d3d3'
         },
         data: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
             'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
         axisLabel: {
-            style: {
-                fill: '#fff'
-            }
+            color: '#d3d3d3'
         }
     },
     yAxis: {
         name: 'Minute',
         nameTextStyle: {
-            fill: '#fff'
+            color: '#d3d3d3'
         },
-        data: 'value',
+        type: 'value',
         min: 0,
         axisLabel: {
-            style: {
-                fill: '#fff'
-            }
+            color: '#d3d3d3'
         }
     },
     series: [
         {
             data: [15780, 316, 4248, 2508, 10218, 1926, 30960, 10284, 10290, 0, 0, 0],
-
             type: 'line',
-            lineArea: {
-                show: true,
-                gradient: ['rgba(251, 114, 147, 0.6)', 'rgba(251, 114, 147, 0)']
+            areaStyle: {
+                color: {
+                    type: 'linear',
+                    x: 0,
+                    y: 0,
+                    x2: 0,
+                    y2: 1,
+                    colorStops: [
+                        { offset: 0, color: 'rgba(251, 114, 147, 0.6)' },
+                        { offset: 1, color: 'rgba(251, 114, 147, 0)' }
+                    ]
+                }
             }
+
         }
     ]
-})
+});
 </script>
 <template>
     <div style="flex: 0 1 50%">
         <dv-border-box12 style="width: 100%; height: 300px;">
             <dv-loading v-if="loadingMttr">Loading...</dv-loading>
-            <div dv-bg v-else>
-                <dv-charts :option="optionLineMttr" style="width:100%;height:300px;" />
+            <div dv-bg v-else style="width:100%;height: 100%;">
+                <Echarts :option="optionLineMttr" style="width:100%;height:300px;" />
             </div>
 
         </dv-border-box12>
@@ -203,8 +261,8 @@ let optionLineMtbf = reactive({
     <div style="flex: 0 1 50%">
         <dv-border-box12 style="width: 100%; height: 300px;">
             <dv-loading v-if="loadingMtbf">Loading...</dv-loading>
-            <div dv-bg v-else>
-                <dv-charts :option="optionLineMtbf" style="width:100%;height:300px;" />
+            <div dv-bg v-else style="width:100%;height: 100%;">
+                <Echarts :option="optionLineMtbf" style="width:100%;height:300px;" />
             </div>
         </dv-border-box12>
 
