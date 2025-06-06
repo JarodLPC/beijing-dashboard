@@ -15,6 +15,7 @@ let summaryIntervalId: any | null = null;
 let loadingOee = ref<boolean>(true);
 let loadingMachineStopSummary = ref<boolean>(true);
 
+
 let fetchOee = async () => {
     // 获取当前年份
     let yearNow = getCurrentDate()[0];
@@ -38,7 +39,7 @@ let fetchOee = async () => {
         optionOee.series[0].data = oeeData;
 
         loadingOee.value = false;
-
+        // console.log('oeeData', oeeData);
 
     } catch (error) {
         console.error('请求失败:', error);
@@ -158,16 +159,18 @@ let optionMachineStopSummary = reactive({
         text: 'Machine Stop Summary',
         style: {
             fill: '#fff',
-            fontSize: 30
+            fontSize: 40
         },
 
     },
     legend: {
         data: ['duration', '%'],
         textStyle: {
-            fill: '#fff'
+            fill: '#fff',
+            fontSize: 30
         },
-        bottom: 10
+        bottom: 4,
+        itemGap: 100
     },
     xAxis: {
         data: [
@@ -178,9 +181,12 @@ let optionMachineStopSummary = reactive({
                 rotate: 0,
                 fill: '#fff',
                 textAlign: 'center',
-                textBaseline: 'top'
+                textBaseline: 'top',
+                fontSize: 20
+
             }
         },
+
         axisTick: {
             show: false
         }
@@ -190,7 +196,7 @@ let optionMachineStopSummary = reactive({
             name: 'duration',
             nameTextStyle: {
                 fill: '#fff',
-                fontSize: 10
+                fontSize: 20
             },
             data: 'value',
             min: 0,
@@ -204,7 +210,8 @@ let optionMachineStopSummary = reactive({
             axisLabel: {
                 formatter: '{value} h',
                 style: {
-                    fill: '#fff'
+                    fill: '#fff',
+                    fontSize: 20
                 }
             },
             axisTick: {
@@ -215,7 +222,7 @@ let optionMachineStopSummary = reactive({
             name: '%',
             nameTextStyle: {
                 fill: '#fff',
-                fontSize: 10
+                fontSize: 20
             },
             data: 'value',
             position: 'right',
@@ -228,7 +235,8 @@ let optionMachineStopSummary = reactive({
             axisLabel: {
                 formatter: '{value} %',
                 style: {
-                    fill: '#fff'
+                    fill: '#fff',
+                    fontSize: 20
                 }
             },
             axisTick: {
@@ -264,17 +272,19 @@ let optionOee = reactive({
         text: 'OEE',
         style: {
             fill: '#fff',
-            fontSize: 30
+            fontSize: 40
         }
     },
     xAxis: {
         name: getCurrentDate()[0].toString(),
         nameTextStyle: {
-            fill: '#fff'
+            fill: '#fff',
+            fontSize: 20
         },
         axisLabel: {
             style: {
-                fill: '#fff'
+                fill: '#fff',
+                fontSize: 20
             }
         },
         data: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
@@ -283,11 +293,13 @@ let optionOee = reactive({
     yAxis: {
         name: '%',
         nameTextStyle: {
-            fill: '#fff'
+            fill: '#fff',
+            fontSize: 20
         },
         axisLabel: {
             style: {
-                fill: '#fff'
+                fill: '#fff',
+                fontSize: 20
             },
             formatter: '{value} %'
         },
@@ -319,16 +331,16 @@ onMounted(async () => {
         optionMachineStopSummary.xAxis.data = sortedCategories;
         optionMachineStopSummary.series[0].data = sortedValues;
         optionMachineStopSummary.series[1].data = percentageValues;
-        optionMachineStopSummary = { ...optionMachineStopSummary };
-    }, 3400000);
+        // optionMachineStopSummary = { ...optionMachineStopSummary };
+    }, 1 * 60 * 1000);
 
     oeeIntervalId = setInterval(() => {
         loadingOee.value = true;
         oeeData = [];
         fetchOee();
         optionOee.series[0].data = oeeData;
-        optionOee = { ...optionOee };
-    }, 2000000);
+        // optionOee = { ...optionOee };
+    }, 1.5 * 60 * 1000);
 
 
 
@@ -342,18 +354,18 @@ onBeforeUnmount(() => {
 </script>
 <template>
     <div style="flex: 0 1 50%">
-        <dv-border-box12 style="width: 100%; height: 350px;">
+        <dv-border-box12 style="width: 100%; height: 30vh; padding-top : 2vh;">
             <dv-loading v-if="loadingMachineStopSummary">Loading...</dv-loading>
-            <div dv-bg v-else>
-                <dv-charts :option="optionMachineStopSummary" style="width:100%;height:350px;" />
+            <div dv-bg v-else><!-- v-else -->
+                <dv-charts :option="optionMachineStopSummary" style="width:100%;height:26vh;" />
             </div>
         </dv-border-box12>
     </div>
     <div style="flex: 0 1 50%">
-        <dv-border-box12 style="width: 100%; height: 350px;">
+        <dv-border-box12 style="width: 100%; height: 30vh; padding-top : 2vh;">
             <dv-loading v-if="loadingOee">Loading...</dv-loading>
-            <div dv-bg v-else>
-                <dv-charts :option="optionOee" style="width:100%;height:350px;" />
+            <div dv-bg v-else><!-- v-else -->
+                <dv-charts :option="optionOee" style="width:100%;height:26vh;" />
             </div>
         </dv-border-box12>
 

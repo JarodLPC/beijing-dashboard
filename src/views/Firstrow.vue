@@ -23,34 +23,38 @@ let optionLabor = reactive({
         text: 'Labor Efficiency',
         style: {
             fill: '#fff',
-            fontSize: 30
+            fontSize: 40
         }
     },
 
     xAxis: {
         name: getCurrentDate()[0].toString(),
         nameTextStyle: {
-            fill: '#fff'
+            fill: '#fff',
+            fontSize: 20
         },
         data: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
             'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
         axisLabel: {
             style: {
-                fill: '#fff'
+                fill: '#fff',
+                fontSize: 20
             }
         }
     },
     yAxis: {
         name: '%',
         nameTextStyle: {
-            fill: '#fff'
+            fill: '#fff',
+            fontSize: 20
         },
         data: 'value',
         min: 0,
         max: 100,
         axisLabel: {
             style: {
-                fill: '#fff'
+                fill: '#fff',
+                fontSize: 20
             },
             formatter: '{value} %',
         }
@@ -71,34 +75,38 @@ let optionUtilization = reactive({
         text: 'Utilization',
         style: {
             fill: '#fff',
-            fontSize: 30
+            fontSize: 40
         }
     },
 
     xAxis: {
         name: getCurrentDate()[0].toString(),
         nameTextStyle: {
-            fill: '#fff'
+            fill: '#fff',
+            fontSize: 20
         },
         data: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
             'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
         axisLabel: {
             style: {
-                fill: '#fff'
+                fill: '#fff',
+                fontSize: 20
             }
         }
     },
     yAxis: {
         name: '%',
         nameTextStyle: {
-            fill: '#fff'
+            fill: '#fff',
+            fontSize: 20
         },
         data: 'value',
         min: 0,
         max: 100,
         axisLabel: {
             style: {
-                fill: '#fff'
+                fill: '#fff',
+                fontSize: 20
             },
             formatter: '{value} %'
         }
@@ -161,7 +169,7 @@ let fetchFailuresTimeCount = async () => {
 
 }
 
-let respLabors: number[];
+let respLabors: number[] = [];
 let respUtilizations: number[] = [];
 
 let loadingLabor = ref<boolean>(true);
@@ -213,7 +221,6 @@ let fetchUtilizationData = async () => {
 
         optionUtilization.series[0].data = respUtilizations;
         loadingUtilization.value = false;
-        // console.log('respUtilizations', respUtilizations);
     } catch (error) {
         console.error('请求失败:', error);
     }
@@ -234,8 +241,8 @@ onMounted(async () => {
 
         optionLabor.series[0].data = respLabors;
 
-        optionLabor = { ...optionLabor };
-    }, 40 * 60 * 1000);
+        // optionLabor = { ...optionLabor };
+    }, 1 * 60 * 1000);
     utilizationIntervalId = setInterval(() => {
 
         loadingUtilization.value = true;
@@ -245,15 +252,15 @@ onMounted(async () => {
 
         optionUtilization.series[0].data = respUtilizations;
 
-        optionUtilization = { ...optionUtilization };
+        // optionUtilization = { ...optionUtilization };
 
-    }, 50 * 60 * 1000);
+    }, 2 * 60 * 1000);
     occIntervalId = setInterval(() => {
         loadingOcc.value = true;
         loadingDur.value = true;
         fetchFailuresTimeCount();
 
-    }, 30 * 60 * 1000);
+    }, 1 * 60 * 1000);
 })
 onBeforeUnmount(() => {
     clearInterval(occIntervalId);
@@ -264,32 +271,32 @@ onBeforeUnmount(() => {
 </script>
 <template>
     <div style="flex: 0 1 30%">
-        <dv-border-box12 style="width: 100%; height: 300px;">
+        <dv-border-box12 style="width: 100%; height: 30vh;padding-top : 2vh;">
             <dv-loading v-if="loadingLabor">Loading...</dv-loading>
             <div dv-bg v-else>
-                <dv-charts :option="optionLabor" style="width:100%;height:300px;" />
+                <dv-charts :option="optionLabor" style="width:100%;height:28vh;" />
             </div>
         </dv-border-box12>
     </div>
     <div style="flex: 0 1 20%">
-        <dv-border-box12 style="width: 100%; height: 300px;">
+        <dv-border-box12 style="width: 100%; height: 30vh;">
             <div
-                style="width: 100%; height:300px; display: flex; flex-direction : column; justify-content:space-around;">
-                <div style="font-size: 30px; flex:0 1 20%; font-weight: bold; text-align: center;">
+                style="width: 100%; height:30vh; display: flex; flex-direction : column; justify-content:space-around;">
+                <div style="font-size: 3vh;  font-weight: bold; text-align: center;">
                     Occurence TPM Failures
                 </div>
                 <!-- <div style="font-size: 60px;text-align: center;">{{ temp }}</div> -->
                 <dv-loading v-if="loadingOcc">Loading...</dv-loading>
                 <div v-else style="font-size: 60px;flex:0 1 50%; text-align: center;display: flex;">
                     <div style="flex: 0 1 50%; height:100px ">
-                        <div style="font-size: 20px; padding: 10px;">Last Month</div>
+                        <div style="font-size: 2vh; padding: 10px;">Last Month</div>
                         <!-- <dv-decoration-9 :dur=20 style="width:100%;height:175px;font-size: 40px;">{{ occData[1] }}</dv-decoration-9> -->
-                        <div style="font-size: 50px; padding: 10px;">{{ occLastMonthData }}</div>
+                        <div style="font-size: 5vh; padding: 10px;">{{ occLastMonthData }}</div>
                     </div>
                     <div style="flex: 0 1 50%">
-                        <div style="font-size: 20px;padding: 10px;">YTD</div>
+                        <div style="font-size: 2vh;padding: 10px;">YTD</div>
                         <!-- <dv-decoration-9 :dur=20 style="width:100%;height:175px;font-size: 40px;">{{ occData[0] }}</dv-decoration-9> -->
-                        <div style="font-size: 50px;padding: 10px;">{{ occYtdData }}</div>
+                        <div style="font-size: 5vh;padding: 10px;">{{ occYtdData }}</div>
                     </div>
 
 
@@ -299,34 +306,33 @@ onBeforeUnmount(() => {
         </dv-border-box12>
     </div>
     <div style="flex: 0 1 20%">
-        <dv-border-box12 :reverse="true" style="width: 100%; height: 300px; ">
+        <dv-border-box12 :reverse="true" style="width: 100%; height: 30vh; ">
             <div
-                style="width: 100%; height:300px; display: flex; flex-direction : column; justify-content:space-around;">
-                <div style="font-size: 30px; font-weight: bold;  text-align: center;">
+                style="width: 100%; height:30vh; display: flex; flex-direction : column; justify-content:space-around;">
+                <div style="font-size: 3vh; font-weight: bold;  text-align: center;">
                     Duration TPM Failures
                 </div>
                 <dv-loading v-if="loadingDur">Loading...</dv-loading>
                 <div v-else style="font-size: 60px;flex:0 1 50%; text-align: center;display: flex;">
                     <div style="flex: 0 1 50%; height:100px ">
-                        <div style="font-size: 20px; padding: 10px;">Last Month (h)</div>
+                        <div style="font-size: 2vh; padding: 10px;">Last Month (h)</div>
                         <!-- <dv-decoration-9 :dur=20 style="width:100%;height:175px;font-size: 40px;">{{ durData[1] }}</dv-decoration-9> -->
-                        <div style="font-size: 50px; padding: 10px;">{{ durLastMonthData }} </div>
+                        <div style="font-size: 5vh; padding: 10px;">{{ durLastMonthData }} </div>
                     </div>
                     <div style="flex: 0 1 50%">
-                        <div style="font-size: 20px;padding: 10px;">YTD (h)</div>
+                        <div style="font-size: 2vh;padding: 10px;">YTD (h)</div>
                         <!-- <dv-decoration-9 :dur=20 style="width:100%;height:175px;font-size: 40px;">{{ durData[0] }}</dv-decoration-9> -->
-                        <div style="font-size: 50px;padding: 10px;">{{ durYtdData }} </div>
+                        <div style="font-size: 5vh;padding: 10px;">{{ durYtdData }} </div>
                     </div>
                 </div>
             </div>
         </dv-border-box12>
     </div>
     <div style="flex: 0 1 30%">
-
-        <dv-border-box12 style="width: 100%; height: 300px;">
+        <dv-border-box12 style="width: 100%; height: 30vh; padding-top : 2vh;">
             <dv-loading v-if="loadingUtilization">Loading...</dv-loading>
             <div dv-bg v-else>
-                <dv-charts :option="optionUtilization" style="width:100%;height:300px;" />
+                <dv-charts :option="optionUtilization" style="width:100%;height:28vh;" />
             </div>
         </dv-border-box12>
     </div>

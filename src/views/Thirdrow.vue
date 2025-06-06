@@ -12,7 +12,107 @@ let loadingMtbf = ref<boolean>(true);
 let mttrIntervalId: any | null = null;
 // let mtbfIntervalId: NodeJS.Timeout | null = null;
 let mtbfIntervalId: any | null = null;
+let optionLineMttr = reactive({
+    title: {
+        text: 'MTTR',
+        style: {
+            fill: '#fff',
+            fontSize: 40
+        }
+    },
 
+    xAxis: {
+        name: getCurrentDate()[0].toString(),
+        nameTextStyle: {
+            fill: '#fff',
+            fontSize: 20
+        },
+        data: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+            'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+        axisLabel: {
+            style: {
+                fill: '#fff',
+                fontSize: 20
+            }
+        }
+    },
+    yAxis: {
+        name: 'Minute',
+        nameTextStyle: {
+            fill: '#fff'
+        },
+        data: 'value',
+        min: 0,
+        axisLabel: {
+            style: {
+                fill: '#fff',
+                fontSize: 20
+            }
+        }
+    },
+    series: [
+        {
+            data: respMttrs,
+            type: 'line',
+            lineArea: {
+                show: true,
+                gradient: ['rgba(251, 114, 147, 0.6)', 'rgba(251, 114, 147, 0)']
+            }
+        }
+    ]
+})
+let optionLineMtbf = reactive({
+    title: {
+        text: 'MTBF',
+        style: {
+            fill: '#fff',
+            fontSize: 40
+        }
+    },
+
+    xAxis: {
+        name: getCurrentDate()[0].toString(),
+        nameTextStyle: {
+            fill: '#fff',
+            fontSize: 20
+
+        },
+        data: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+            'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+        axisLabel: {
+            style: {
+                fill: '#fff',
+                fontSize: 20
+            }
+        }
+    },
+    yAxis: {
+        name: 'Minute',
+        nameTextStyle: {
+            fill: '#fff',
+            fontSize: 20
+        },
+        data: 'value',
+        min: 0,
+        axisLabel: {
+            style: {
+                fill: '#fff',
+                fontSize: 20
+            }
+        }
+    },
+    series: [
+        {
+            data: [15780, 316, 4248, 2508, 10218, 1926, 30960, 10284, 10290, 0, 0, 0],
+
+            type: 'line',
+            lineArea: {
+                show: true,
+                gradient: ['rgba(251, 114, 147, 0.6)', 'rgba(251, 114, 147, 0)']
+            }
+        }
+    ]
+})
 let fetchMttrData = async () => {
     // 获取当前年份
     let yearNow = getCurrentDate()[0];
@@ -74,8 +174,8 @@ onMounted(async () => {
 
         optionLineMttr.series[0].data = respMttrs;
 
-        optionLineMttr = { ...optionLineMttr };
-    }, 3500000);
+        // optionLineMttr = { ...optionLineMttr };
+    }, 1 * 60 * 1000);
     mtbfIntervalId = setInterval(() => {
 
         loadingMtbf.value = true;
@@ -85,9 +185,9 @@ onMounted(async () => {
 
         optionLineMtbf.series[0].data = respMtbfs;
 
-        optionLineMtbf = { ...optionLineMtbf };
+        // optionLineMtbf = { ...optionLineMtbf };
 
-    }, 3600000);
+    }, 2 * 60 * 1000);
 
 })
 onBeforeUnmount(() => {
@@ -95,116 +195,23 @@ onBeforeUnmount(() => {
     clearInterval(mtbfIntervalId);
 })
 
-let optionLineMttr = reactive({
-    title: {
-        text: 'MTTR',
-        style: {
-            fill: '#fff',
-            fontSize: 30
-        }
-    },
 
-    xAxis: {
-        name: getCurrentDate()[0].toString(),
-        nameTextStyle: {
-            fill: '#fff'
-        },
-        data: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-            'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
-        axisLabel: {
-            style: {
-                fill: '#fff'
-            }
-        }
-    },
-    yAxis: {
-        name: 'Minute',
-        nameTextStyle: {
-            fill: '#fff'
-        },
-        data: 'value',
-        min: 0,
-        axisLabel: {
-            style: {
-                fill: '#fff'
-            }
-        }
-    },
-    series: [
-        {
-            data: respMttrs,
-            type: 'line',
-            lineArea: {
-                show: true,
-                gradient: ['rgba(251, 114, 147, 0.6)', 'rgba(251, 114, 147, 0)']
-            }
-        }
-    ]
-})
-let optionLineMtbf = reactive({
-    title: {
-        text: 'MTBF',
-        style: {
-            fill: '#fff',
-            fontSize: 30
-        }
-    },
-
-    xAxis: {
-        name: getCurrentDate()[0].toString(),
-        nameTextStyle: {
-            fill: '#fff'
-
-        },
-        data: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-            'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
-        axisLabel: {
-            style: {
-                fill: '#fff'
-            }
-        }
-    },
-    yAxis: {
-        name: 'Minute',
-        nameTextStyle: {
-            fill: '#fff'
-        },
-        data: 'value',
-        min: 0,
-        axisLabel: {
-            style: {
-                fill: '#fff'
-            }
-        }
-    },
-    series: [
-        {
-            data: [15780, 316, 4248, 2508, 10218, 1926, 30960, 10284, 10290, 0, 0, 0],
-
-            type: 'line',
-            lineArea: {
-                show: true,
-                gradient: ['rgba(251, 114, 147, 0.6)', 'rgba(251, 114, 147, 0)']
-            }
-        }
-    ]
-})
 </script>
 <template>
     <div style="flex: 0 1 50%">
-        <dv-border-box12 style="width: 100%; height: 300px;">
+        <dv-border-box12 style="width: 100%; height: 30vh; padding-top : 2vh;">
             <dv-loading v-if="loadingMttr">Loading...</dv-loading>
             <div dv-bg v-else>
-                <dv-charts :option="optionLineMttr" style="width:100%;height:300px;" />
+                <dv-charts :option="optionLineMttr" style="width:100%;height: 28vh;" />
             </div>
 
         </dv-border-box12>
     </div>
     <div style="flex: 0 1 50%">
-        <dv-border-box12 style="width: 100%; height: 300px;">
+        <dv-border-box12 style="width: 100%; height: 30vh; padding-top : 2vh;">
             <dv-loading v-if="loadingMtbf">Loading...</dv-loading>
             <div dv-bg v-else>
-                <dv-charts :option="optionLineMtbf" style="width:100%;height:300px;" />
+                <dv-charts :option="optionLineMtbf" style="width:100%;height: 28vh;" />
             </div>
         </dv-border-box12>
 
