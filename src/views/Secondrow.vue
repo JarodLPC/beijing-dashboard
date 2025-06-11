@@ -332,7 +332,7 @@ onMounted(async () => {
         optionMachineStopSummary.series[0].data = sortedValues;
         optionMachineStopSummary.series[1].data = percentageValues;
         // optionMachineStopSummary = { ...optionMachineStopSummary };
-    }, 1 * 60 * 1000);
+    }, 30 * 60 * 1000);
 
     oeeIntervalId = setInterval(() => {
         loadingOee.value = true;
@@ -340,7 +340,7 @@ onMounted(async () => {
         fetchOee();
         optionOee.series[0].data = oeeData;
         // optionOee = { ...optionOee };
-    }, 1.5 * 60 * 1000);
+    }, 40 * 60 * 1000);
 
 
 

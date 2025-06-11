@@ -39,13 +39,13 @@ onBeforeUnmount(() => {
     </div>
     <div style="flex:0 1 40%">
         <div class="d-flex">
-            <dv-decoration8 style="width:100%;height:5vh; flex: 1;" />
+            <dv-decoration8 style="width:100%;height:4vh; flex: 0 1 20%;" />
 
-            <div text-2xl pt10 class="index-title" style="font-size: 5vh;color:white">
+            <div text-2xl pt10 class="index-title" style="flex: 0 1 60%;">
                 HP TPM Dashboard
             </div>
 
-            <dv-decoration8 :reverse="true" style="width:100%;height:5vh; flex: 1;" />
+            <dv-decoration8 :reverse="true" style="width:100%;height:4vh; flex: 0 1 20%;" />
 
         </div>
 
@@ -54,7 +54,7 @@ onBeforeUnmount(() => {
     <div small-bg style="flex:0 1 30%">
         <dv-decoration-10 style="width:100%;height:1vh;" />
         <div style="width: 100%; height: 4vh; text-align: right;">
-            <img src="@/assets/imgs/icon_evo_on.svg" alt="evoONlogo" style="height:100%; object-fit: cover;">
+            <img src="@/assets/imgs/icon_evo_on.svg" alt="evoONlogo" style="height:4vh; object-fit: cover;">
         </div>
     </div>
 </template>

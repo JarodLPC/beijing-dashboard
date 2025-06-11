@@ -39,7 +39,8 @@ let optionLineMttr = reactive({
     yAxis: {
         name: 'Minute',
         nameTextStyle: {
-            fill: '#fff'
+            fill: '#fff',
+            fontSize:20
         },
         data: 'value',
         min: 0,
@@ -175,7 +176,7 @@ onMounted(async () => {
         optionLineMttr.series[0].data = respMttrs;
 
         // optionLineMttr = { ...optionLineMttr };
-    }, 1 * 60 * 1000);
+    }, 45 * 60 * 1000);
     mtbfIntervalId = setInterval(() => {
 
         loadingMtbf.value = true;
@@ -187,7 +188,7 @@ onMounted(async () => {
 
         // optionLineMtbf = { ...optionLineMtbf };
 
-    }, 2 * 60 * 1000);
+    }, 55 * 60 * 1000);
 
 })
 onBeforeUnmount(() => {

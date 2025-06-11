@@ -242,7 +242,7 @@ onMounted(async () => {
         optionLabor.series[0].data = respLabors;
 
         // optionLabor = { ...optionLabor };
-    }, 1 * 60 * 1000);
+    }, 35 * 60 * 1000);
     utilizationIntervalId = setInterval(() => {
 
         loadingUtilization.value = true;
@@ -254,13 +254,13 @@ onMounted(async () => {
 
         // optionUtilization = { ...optionUtilization };
 
-    }, 2 * 60 * 1000);
+    }, 50 * 60 * 1000);
     occIntervalId = setInterval(() => {
         loadingOcc.value = true;
         loadingDur.value = true;
         fetchFailuresTimeCount();
 
-    }, 1 * 60 * 1000);
+    }, 60 * 60 * 1000);
 })
 onBeforeUnmount(() => {
     clearInterval(occIntervalId);

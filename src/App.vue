@@ -1,8 +1,14 @@
 <script setup lang="ts">
-// update 2025/04/08
-// 增加时间标签，清理console.log打印信息
-  import Home from "./views/Home.vue";
-  
+
+import Home from "./views/Home.vue";
+
+import { onMounted } from 'vue';
+
+onMounted(() => {
+  setInterval(() => {
+    location.reload();
+  }, 3 * 60 * 60 * 1000); // 3小时 = 3*60*60*1000 毫秒
+});
 
 </script>
 
